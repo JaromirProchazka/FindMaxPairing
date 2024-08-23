@@ -5,8 +5,15 @@ import Data.List
 import Data.String (IsString)
 import Debug.Trace (trace)
 
+-- set, if you want to log debug messages
+is_debuging :: Bool
+is_debuging = False
+
+
 trace' :: (Show a) => a -> a
-trace' x = trace (show x) x
+trace' x 
+  | (is_debuging) = trace (show x) x
+  | otherwise = x
 
 replace :: [b] -> (b -> Bool) -> (b -> b) -> [b]
 replace [] _ _ = []
@@ -102,7 +109,7 @@ getNextV ((v, es) : g) s p
   | (v == s) = filtered
   | otherwise = getNextV g s p
   where
-    filtered = filter (\(e, c, uv, vu) -> 0 < rezerva (e, c, uv, vu) && (filter (\(pv, _, _, _) -> pv == e) p) == []) es
+    filtered = trace' (filter (\(e, c, uv, vu) -> 0 < rezerva (e, c, uv, vu) && (filter (\(pv, _, _, _) -> pv == e) p) == []) es)
 
 -- bfsPath :: Graf -> Koncový vrchol -> Queue dvojic vrchol a cesta do něj obsahující startovací vrchol -> nenasycená cesta
 bfsPath :: (Eq a, Show a) => Rezervy a -> a -> a -> (Int, Path a)

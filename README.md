@@ -2,8 +2,10 @@
 
 ```
 -- Run code
-$ ghc -o hello hello.hs
+ghc -o ./tests/testy ./tests/testy.hs
+./tests/testy
 
 -- Run tests
-$ ghc -o hello hello.hs
+ghc -o Parovani Parovani.hs
+./Parovani
 ```
