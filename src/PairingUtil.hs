@@ -1,8 +1,8 @@
 module PairingUtil where
 
+import GraphDataStructures
 import Data.List
 -- import Debug.Trace
-import Data.String (IsString)
 import Debug.Trace (trace)
 
 -- set, if you want to log debug messages
@@ -17,22 +17,9 @@ trace' x
 
 replace :: [b] -> (b -> Bool) -> (b -> b) -> [b]
 replace [] _ _ = []
-replace (b : bs) pred mapTo
-  | (pred b) = (mapTo b) : bs
-  | otherwise = b : (replace bs pred mapTo)
-
--- Vrchol -> [(Následníci, Toky, Kapacity)]
-type GrafHrana a = (a, Int, Int)
-
-type Graf a = [(a, [GrafHrana a])]
-
--- do vrcholu, kapacita hrany, rezerva po hraně, rezerva proti hraně
-type RezervaHrana a = (a, Int, Int, Int)
-
--- Rezervy :: [vrchol, [hrany], reached]
-type Rezervy a = [(a, [RezervaHrana a])]
-
-type Path a = [RezervaHrana a]
+replace (b : bs) predch mapTo
+  | (predch b) = (mapTo b) : bs
+  | otherwise = b : (replace bs predch mapTo)
 
 rezervy :: Graf a -> Rezervy a
 rezervy g =
@@ -55,65 +42,20 @@ resetReached rs = map (\(v, es) -> (v, es)) rs
 
 -- vrátí rezervu hrany
 rezerva :: RezervaHrana a -> Int
-rezerva (v, c, uv, vu) = c - uv + vu
-
-class Queue q where
-  emptyQueue :: q a
-  isEmpty :: q a -> Bool
-  enqueue :: a -> q a -> q a
-  dequeue :: q a -> (a, q a)
-  enqueueLs :: [a] -> q a -> q a
-
-data SQueue a = SQueue [a] [a]
-
-instance (Eq a) => Eq (SQueue a) where
-  SQueue f b == SQueue otherF otherB = f ++ (reverse b) == otherF ++ (reverse otherB)
-
--- Implementing the Queue instance
-instance Queue SQueue where
-  emptyQueue = SQueue [] []
-  isEmpty (SQueue [] []) = True
-  isEmpty (SQueue f b) = False
-  enqueue x (SQueue f b) = SQueue f (x : b)
-  enqueueLs [] qs = qs
-  enqueueLs (x : xs) qs = enqueueLs xs (enqueue x qs)
-  dequeue (SQueue [] []) = error "Can't dequeue an empty Queue!"
-  dequeue (SQueue (f : fs) b) = (f, SQueue fs b)
-  dequeue (SQueue f b) = ((head newF), (SQueue (tail newF) []))
-    where
-      newF = f ++ (reverse b)
-
-instance (Show a) => Show (SQueue a) where
-  show (SQueue f b) = "q" ++ show (f ++ (reverse b)) ++ "\n"
-
--- qs = enqueue 7 (enqueue 5 (enqueue 3 emptyQueue)) :: SQueue Int
--- qs2 = dequeue qs
--- deqed = (enqueue 6969 (snd (dequeue (queue_of_nums 3 1000 :: (SQueue Int)))))
-
--- f)
-instance Functor SQueue where
-  fmap func (SQueue f b) = SQueue (map func f) (map func b)
-
-queue_of_nums :: (Queue q) => Int -> Int -> q Int
-queue_of_nums x y = queue_of_nums' emptyQueue x y
-
-queue_of_nums' :: (Queue q) => q Int -> Int -> Int -> q Int
-queue_of_nums' que x y
-  | (x > y) = que
-  | otherwise = queue_of_nums' (enqueue x que) (x + 1) y
+rezerva (_, c, uv, vu) = c - uv + vu
 
 -- najde následovníky vrcholu v síti, kteří nejsou na nasycené hraně
 getNextV :: (Eq a, Show a) => Rezervy a -> a -> Path a -> [RezervaHrana a]
 getNextV [] _ _ = []
-getNextV ((v, es) : g) s p
-  | (v == s) = filtered
-  | otherwise = getNextV g s p
+getNextV ((v, es) : g) st p
+  | (v == st) = filtered
+  | otherwise = getNextV g st p
   where
     filtered = trace' (filter (\(e, c, uv, vu) -> 0 < rezerva (e, c, uv, vu) && (filter (\(pv, _, _, _) -> pv == e) p) == []) es)
 
 -- bfsPath :: Graf -> Koncový vrchol -> Queue dvojic vrchol a cesta do něj obsahující startovací vrchol -> nenasycená cesta
 bfsPath :: (Eq a, Show a) => Rezervy a -> a -> a -> (Int, Path a)
-bfsPath r s e = bfsBody r e (enqueue (s, [], maxBound :: Int) emptyQueue)
+bfsPath r st e = bfsBody r e (enqueue (st, [], maxBound :: Int) emptyQueue)
 
 -- hledá nenasycenou cestu mezi vrcholy
 -- Impl: dokud není Q prázdná
@@ -132,7 +74,7 @@ bfsBody g e q
     next_es = getNextV g v p
     -- vytvoří seznam dvojic (další vrchol, nynější cesta s tímto vrcholem)
     -- nextsQs :: [(a, Path a, Int)]
-    nextsQs = map (\(v, c, uv, vu) -> (v, ((v, c, uv, vu) : p), min (rezerva (v, c, uv, vu)) i)) next_es
+    nextsQs = map (\(vv, c, uv, vu) -> (vv, ((vv, c, uv, vu) : p), min (rezerva (vv, c, uv, vu)) i)) next_es
     -- výsledná que jednoho kroku bfs
     newQ = enqueueLs nextsQs dq -- enque všechny (následníky, dosavadní cesta)
 
@@ -140,32 +82,32 @@ bfsBody g e q
 -- ffKrok :: Graf rezerv -> zdroj -> cesta a její min rezerva -> Nový Graf Rezerv
 ffKrok :: (Eq a, Show a) => Rezervy a -> a -> (Int, Path a) -> Rezervy a
 ffKrok rs _ (_, []) = rs
-ffKrok rs z (epsylon, ((v, c, uv, vu) : p)) = ffKrok new_rs v (epsylon, p)
+ffKrok rs zt (epsylon, ((v, c, uv, vu) : p)) = ffKrok new_rs v (epsylon, p)
   where
     delta = min vu epsylon
-    new_rs = updateTok rs z (v, c, uv, vu) epsylon delta
+    new_rs = updateTok rs zt (v, c, uv, vu) epsylon delta
 
 -- Vezme hranu toku na nenasycené cestě a nasytí
 -- updateTok ((s,es,b):rs) u (v, c, uv, vu) epsylon delta
 updateTok :: (Eq a, Show a) => Rezervy a -> a -> RezervaHrana a -> Int -> Int -> Rezervy a
 updateTok [] _ _ _ _ = []
-updateTok ((s, es) : rs) u (v, c, uv, vu) epsylon delta
-  | (s == u) = (s, new_es) : rs
-  | otherwise = (s, es) : updateTok rs u (v, c, uv, vu) epsylon delta
+updateTok ((st, es) : rs) u (v, c, uv, vu) epsylon delta
+  | (st == u) = (st, new_es) : rs
+  | otherwise = (st, es) : updateTok rs u (v, c, uv, vu) epsylon delta
   where
     new_es =
       replace
         es
-        (\(v1, c1, uv1, vu1) -> v1 == v)
+        (\(v1, _, _, _) -> v1 == v)
         (\(v1, c1, uv1, vu1) -> (v1, c1, uv1 + epsylon - delta, vu1 - delta))
 
 fordfalk' :: (Eq a, Show a) => Rezervy a -> a -> a -> Rezervy a
-fordfalk' rs z s
+fordfalk' rs zt st
   | (fst nenasycenaCesta == 0) = rs
-  | otherwise = fordfalk' new_rs z s
+  | otherwise = fordfalk' new_rs zt st
   where
-    nenasycenaCesta = bfsBody rs s (enqueue (z, [], maxBound :: Int) emptyQueue)
-    new_rs = ffKrok rs z (trace' nenasycenaCesta)
+    nenasycenaCesta = bfsBody rs st (enqueue (zt, [], maxBound :: Int) emptyQueue)
+    new_rs = ffKrok rs zt (trace' nenasycenaCesta)
 
 -- label pro zdrojový vrchol
 z :: String
@@ -182,12 +124,12 @@ combineAndRemoveDuplicates = nub . concat
 rozsirGraf :: [(String, [String])] -> Graf String
 rozsirGraf gs = (rozsirGraf' gs (z, []) s) ++ (map (\v -> (v, [(s, 0, 1)])) vs_s)
   where
-    vs_s = combineAndRemoveDuplicates (map (\(v, es) -> es) gs)
+    vs_s = combineAndRemoveDuplicates (map (\(_, es) -> es) gs)
 
 -- rozsirGraf' gs u (v, t, c)
 rozsirGraf' :: (Eq a, Show a) => [(a, [a])] -> (a, [a]) -> a -> Graf a
-rozsirGraf' [] (z, zs) s = [(z, (map (\v -> (v, 0, 1)) zs)), (s, [])]
-rozsirGraf' ((u, vs) : gs) (z, zs) s = (u, (map (\v -> (v, 0, 1)) vs)) : rozsirGraf' gs (z, u : zs) s
+rozsirGraf' [] (zt, zs) st = [(zt, (map (\v -> (v, 0, 1)) zs)), (st, [])]
+rozsirGraf' ((u, vs) : gs) (zt, zs) st = (u, (map (\v -> (v, 0, 1)) vs)) : rozsirGraf' gs (zt, u : zs) st
 
 -- převede max toky bipartitního grafu na array párů vrcholů představující párování
 grafnapary :: Graf String -> [(String, String)]
@@ -197,10 +139,10 @@ grafnapary ((u, evs) : gs)
   | otherwise = (u, head vs) : grafnapary gs
   where
     es = filter (\(v, t, _) -> t == 1 && v /= z && v /= s) evs
-    vs = map (\(v, t, _) -> v) es
+    vs = map (\(v, _, _) -> v) es
 
 -- Vezme síť (s toky 0), jméno zdrojového vrcholu, jméno koncového vrcholu a vrátí síť s maximálním tokem
 fordfalk :: (Eq a, Show a) => Graf a -> a -> a -> Graf a
-fordfalk gs z s = grafy rs
+fordfalk gs zt st = grafy rs
   where
-    rs = fordfalk' (rezervy gs) z s
+    rs = fordfalk' (rezervy gs) zt st

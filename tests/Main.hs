@@ -1,5 +1,6 @@
 module Main (main) where
 
+import GraphDataStructures
 import Pairing
 import PairingUtil
 
@@ -13,7 +14,7 @@ main = do
   putStrLn (assert (fordfalk square 1 8) "[(1,[(2,6,6),(3,5,6)]),(2,[(4,4,4),(5,2,2)]),(3,[(5,5,9),(2,0,5)]),(4,[(8,7,7)]),(5,[(4,3,8),(8,4,4)]),(8,[(2,0,1),(3,0,4)])]" "Ford-Falk - sit s spetnymi hranami ze stoku")
   putStrLn ""
   putStrLn (assert (parovani chess_basic) "[(\"1\",\"h\"),(\"2\",\"g\"),(\"3\",\"f\"),(\"4\",\"e\"),(\"5\",\"d\"),(\"6\",\"c\"),(\"7\",\"b\"),(\"8\",\"a\")]" "Parovani - veze na normalni sachovnici")
-  --   a b c d e f g h
+--   a b c d e f g h
 -- 1 . . . . . . . T
 -- 2 . . . . . . T .
 -- 3 . . . . . T . .
@@ -80,9 +81,6 @@ diamant =
     ("b2", [("c", 0, 1)]),
     ("c", [])
   ]
-
-diamant_expected :: String
-diamant_expected = "[(\"a\",[(\"b1\",1,1),(\"b2\",1,1)]),(\"b1\",[(\"b2\",0,1),(\"c\",1,1)]),(\"b2\",[(\"c\",1,1)]),(\"c\",[])]"
 
 g :: Rezervy String
 g =
