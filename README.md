@@ -1,24 +1,28 @@
 # Find Max Pairing In Bipartite Graph
 
-A library used for finding a maximal pairing in a bipartite graph. The Pairing algorithm is only supported for String vertices and Strings "$z~" and "$s~" are reserved for source and sink respectively.
+A library used for finding a maximal pairing in a bipartite graph. The Pairing algorithm is only supported for String vertices and Strings `"$z~"` and `"$s~"` are reserved for source and sink respectively.
 
 ## Algorithms
 
-This library uses the Ford-Falkerson algorithm where the next augmenting path is found using the BFS algorithm and edge can also be augmented in the oposite dirrection. This makes the Algorithm correct for any network and although it can be quite slow for a general network, for the bipartite networks with source and sink each connected to one partite and each capacity is set to 1, the algorithm is O(n\*m).
+This library uses the **Ford-Falkerson algorithm** where the next augmenting path is found using the BFS algorithm and edge can also be augmented in the opposite direction.
 
-# Compile
+This makes the Algorithm correct for any network and although it can be quite slow for a general network, **for bipartite networks** with source and sink each connected to one partite and each capacity is set to 1, the algorithm is O(n\*m) (where n is number of vertices and m is number of edges).
+
+# Run And Results
 
 ```
--- on WSL...
--- runs tests
+# on WSL
+# runs tests
 cabal run
 ```
 
 ## Tests
 
-Tests are done on this problem. You get a chessboard with holes (tales, where a pieces can't stand) and you want to find the maximum number of rooks and their placements such that no two rooks attack each other. You can solve this problem by creating a bipartite graph of rows and columns where each edge represents a valid rook placement. By finding the Maximum Pairing in this graph, we can solve this problem.
+Tests are done on this problem. You get a chessboard with holes (tales, where a piece can't stand) and you want to find the maximum number of rooks and their placements such that no two rooks attack each other.
 
-## Tests Results
+You can solve this problem by creating a bipartite graph of rows and columns where each edge represents a valid rook placement. By finding the Maximum Pairing in this graph, we can solve this problem.
+
+## Test Results
 
 ```
 Up to date
