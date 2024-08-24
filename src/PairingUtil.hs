@@ -1,4 +1,4 @@
-module Parovani where
+module PairingUtil where
 
 import Data.List
 -- import Debug.Trace
@@ -204,10 +204,3 @@ fordfalk :: (Eq a, Show a) => Graf a -> a -> a -> Graf a
 fordfalk gs z s = grafy rs
   where
     rs = fordfalk' (rezervy gs) z s
-
--- Vezme list vrcholů jedné partity a seznamu vrcholů druhé partity, do kterých vede z prvního vrcholu hrana
-parovani :: [(String, [String])] -> [(String, String)]
-parovani xs = grafnapary maxtok
-  where
-    gs = rozsirGraf xs
-    maxtok = fordfalk gs z s

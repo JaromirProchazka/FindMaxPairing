@@ -1,4 +1,8 @@
+# Compilation files
 *.exe
 *.o
 *.hi
 /.vscode
+
+# Builds
+dist-newstyle

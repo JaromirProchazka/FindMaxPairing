@@ -1,7 +1,10 @@
-import Parovani
-import Debug.Trace (trace)
+module Main (main) where
+
+import Pairing
+import PairingUtil
 
 -- TEST
+main :: IO ()
 main = do
   putStrLn "RUN TESTS"
   putStrLn (assert (bfsPath g "a" "e") "(2,[(\"c\",2,0,0),(\"e\",3,0,0)])" "BFS - Najdi nenasicenou cestu")

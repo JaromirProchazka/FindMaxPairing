@@ -1,11 +1,24 @@
-# Compile
+## Compile
 
 ```
--- Run code
-ghc -o ./tests/testy ./tests/testy.hs
-./tests/testy
+-- in WSL...
+-- run tests
+cabal run
+```
 
--- Run tests
-ghc -o Parovani Parovani.hs
-./Parovani
+## Tests Results
+
+```
+Up to date
+RUN TESTS
+Test BFS - Najdi nenasicenou cestu Prosel
+
+Test Ford-Falk - klasicky diamant Prosel
+Test Ford-Falk - sit s spetnymi hranami ze stoku Prosel
+
+Test Parovani - veze na normalni sachovnici Prosel
+Test Parovani - veze na sachovnici bez diagonaly Prosel
+Test Parovani - veze na sachovnici ne ctverec Prosel
+Test Parovani - veze na sachovnici jen cerna pole Prosel
+Test Parovani - veze na sachovnici jen cerna pole a s dirami Prosel
 ```
