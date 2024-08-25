@@ -140,9 +140,3 @@ grafnapary ((u, evs) : gs)
   where
     es = filter (\(v, t, _) -> t == 1 && v /= z && v /= s) evs
     vs = map (\(v, _, _) -> v) es
-
--- Vezme síť (s toky 0), jméno zdrojového vrcholu, jméno koncového vrcholu a vrátí síť s maximálním tokem
-fordfalk :: (Eq a, Show a) => Graf a -> a -> a -> Graf a
-fordfalk gs zt st = grafy rs
-  where
-    rs = fordfalk' (rezervy gs) zt st
