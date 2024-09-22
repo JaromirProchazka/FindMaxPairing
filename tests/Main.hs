@@ -3,10 +3,13 @@ module Main (main) where
 import GraphDataStructures
 import Pairing
 import PairingUtil
+import TestDataFetcher
 
 -- TEST
 main :: IO ()
 main = do
+  chess_basic <- partitesToType (readDataFromFile "chess_basic.json")
+
   putStrLn "RUN TESTS"
   putStrLn (assert (bfsPath g "a" "e") "(2,[(\"c\",2,0,0),(\"e\",3,0,0)])" "BFS - Najdi nenasicenou cestu")
   putStrLn ""
@@ -103,17 +106,17 @@ square =
     (8, [(2, 0, 1), (3, 0, 4)])
   ]
 
-chess_basic :: [(String, [String])]
-chess_basic =
-  [ ("1", ["a", "b", "c", "d", "e", "f", "g", "h"]),
-    ("2", ["a", "b", "c", "d", "e", "f", "g", "h"]),
-    ("3", ["a", "b", "c", "d", "e", "f", "g", "h"]),
-    ("4", ["a", "b", "c", "d", "e", "f", "g", "h"]),
-    ("5", ["a", "b", "c", "d", "e", "f", "g", "h"]),
-    ("6", ["a", "b", "c", "d", "e", "f", "g", "h"]),
-    ("7", ["a", "b", "c", "d", "e", "f", "g", "h"]),
-    ("8", ["a", "b", "c", "d", "e", "f", "g", "h"])
-  ]
+-- chess_basic :: [(String, [String])]
+-- chess_basic =
+--   [ ("1", ["a", "b", "c", "d", "e", "f", "g", "h"]),
+--     ("2", ["a", "b", "c", "d", "e", "f", "g", "h"]),
+--     ("3", ["a", "b", "c", "d", "e", "f", "g", "h"]),
+--     ("4", ["a", "b", "c", "d", "e", "f", "g", "h"]),
+--     ("5", ["a", "b", "c", "d", "e", "f", "g", "h"]),
+--     ("6", ["a", "b", "c", "d", "e", "f", "g", "h"]),
+--     ("7", ["a", "b", "c", "d", "e", "f", "g", "h"]),
+--     ("8", ["a", "b", "c", "d", "e", "f", "g", "h"])
+--   ]
 
 chess_no_diagonal :: [(String, [String])]
 chess_no_diagonal =

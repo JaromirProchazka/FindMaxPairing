@@ -64,6 +64,7 @@ library
 
     -- Modules exported by the library.
     exposed-modules:  Pairing
+                      TestDataFetcher
 
     -- Modules included in this library but not exported.
     other-modules:    PairingUtil
@@ -74,12 +75,20 @@ library
 
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.17.2.1
+                    , aeson >= 2.0
+                    , bytestring >= 0.11
+                    , filepath >= 1.4
+                    , projectroot >= 0.2
+                    , generic-deriving >= 1.14
+                    , text
+                    , directory
 
     -- Directories containing source files.
     hs-source-dirs:   src
 
     -- Base language which the package is written in.
     default-language: Haskell2010
+    ghc-options:       -XDeriveGeneric
 
 test-suite FindMaxPairing-test
     -- Import common warning flags.
@@ -92,6 +101,7 @@ test-suite FindMaxPairing-test
     other-modules:    Pairing
                       PairingUtil
                       GraphDataStructures
+                      TestDataFetcher
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -110,3 +120,10 @@ test-suite FindMaxPairing-test
     build-depends:
         base ^>=4.17.2.1,
         FindMaxPairing
+        , aeson >= 2.0
+        , bytestring >= 0.11
+        , filepath >= 1.4
+        , projectroot >= 0.2
+        , generic-deriving >= 1.14
+        , text
+        , directory

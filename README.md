@@ -11,6 +11,11 @@ This makes the Algorithm correct for any network and although it can be quite sl
 # Run And Results
 
 ```
+# OPTIONAL: Update and install deps.
+cabal update
+cabal install --only-dependencies
+cabal build
+
 # on WSL
 # runs tests
 cabal run
